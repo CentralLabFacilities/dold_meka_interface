@@ -29,9 +29,9 @@ class DoldMekaInterface(object):
                                 "torso": False,
                                 "base": False}
         # mapping from button name to state change command
-        self._button_cmd_map = {"B1": M3ControlState.STATE_STOP,
-                                "B2": M3ControlState.STATE_FREEZE,
-                                "B3": M3ControlState.STATE_START}
+        self._button_cmd_map = {"B1": M3ControlState.STOP,
+                                "B2": M3ControlState.FREEZE,
+                                "B3": M3ControlState.START}
 
         self._last_message_time = 0
 
@@ -62,7 +62,8 @@ class DoldMekaInterface(object):
 
         for group_name, state in zip(msg.group_name, msg.state):
             if group_name in self._enabled_groups:
-                if state > M3ControlState.STATE_DISABLE:
+                
+                if state > M3ControlState.DISABLE:
                     self._enabled_groups[group_name] = True
                 else:
                     self._enabled_groups[group_name] = False
