@@ -117,7 +117,7 @@ class DoldMekaInterface(object):
 
 
 def main():
-
+    rospy.init_node('dold_meka_interface')
     dold_meka_if = DoldMekaInterface()
     rospy.spin()
 
