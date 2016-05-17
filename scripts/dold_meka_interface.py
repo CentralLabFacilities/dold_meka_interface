@@ -13,7 +13,7 @@ from m3meka_msgs.msg import M3ControlState, M3ControlStates, \
 from m3meka_msgs.srv import M3ControlStateChange, M3ControlStateChangeResponse
 
 
-class DoldMekaInterface(Object):
+class DoldMekaInterface(object):
     """
     Interface between Dold buttons and Mekabot
     """
