@@ -35,13 +35,7 @@ class DoldMekaInterface(Object):
 
         self._last_message_time = 0
 
-        self._state_sub = rospy.Subscriber("/meka_roscontrol_state_manager/state", M3ControlStates,
-                                           self.state_callback,
-                                           queue_size=2)
-
-        self._button_sub = rospy.Subscriber("/meka_roscontrol_state_manager/state", DoldStates,
-                                            self.button_callback,
-                                            queue_size=2)
+        
 
         self._actionclient = actionlib.SimpleActionClient("/meka_state_manager", M3StateChangeAction)
         rospy.loginfo("Looking for state manager...")
@@ -50,6 +44,14 @@ class DoldMekaInterface(Object):
             self._service_ready = False
         else:
             rospy.loginfo("Found the state manager")
+            
+        self._state_sub = rospy.Subscriber("/meka_roscontrol_state_manager/state", M3ControlStates,
+                                       self.state_callback,
+                                       queue_size=2)
+
+        self._button_sub = rospy.Subscriber("/dold_driver/state", DoldStates,
+                                        self.button_callback,
+                                        queue_size=2)
 
     def state_callback(self, msg):
         """
