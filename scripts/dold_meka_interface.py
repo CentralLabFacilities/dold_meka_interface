@@ -34,6 +34,7 @@ class DoldMekaInterface(object):
                                 "B3": M3ControlState.START}
 
         self._last_message_time = 0
+        self._service_ready = False
 
         
 
@@ -44,6 +45,7 @@ class DoldMekaInterface(object):
             self._service_ready = False
         else:
             rospy.loginfo("Found the state manager")
+            self._service_ready = True
             
         self._state_sub = rospy.Subscriber("/meka_roscontrol_state_manager/state", M3ControlStates,
                                        self.state_callback,
@@ -64,8 +66,10 @@ class DoldMekaInterface(object):
             if group_name in self._enabled_groups:
                 
                 if state > M3ControlState.DISABLE:
+                    # print "group: ", group_name, " is enabled"
                     self._enabled_groups[group_name] = True
                 else:
+                    # print "group: ", group_name, " is disabled"
                     self._enabled_groups[group_name] = False
 
         if not self._service_ready:
@@ -84,16 +88,25 @@ class DoldMekaInterface(object):
         :param msg:
         :type msg: DoldStates
         """
-        cmd = 0
+        cmd = None
+        tmp_cmd = 0
         for event in msg.inputs:
+            # print "dold event: ", event
             if event.type == DoldState.BUTTON:
+                # print "detected a button"
                 if event.name in self._button_cmd_map:
+                    # print "button ", event.name, " is mapped"
                     if event.state == DoldState.PRESSED:
+                        # print "button ", event.name, " was pressed"
                         tmp_cmd = self._button_cmd_map[event.name]
+                        # print "the mapped command is : ", tmp_cmd
                         # always consider the lowest state change cmd (lower is safer)
+                        if cmd is None:
+                            cmd = tmp_cmd
                         if tmp_cmd < cmd:
                             cmd = tmp_cmd
-        if cmd > 0:
+        if cmd is not None and cmd > 0:
+            # print "sending a command: ", cmd
             self.change_state(cmd)
 
     def change_state(self, cmd):
@@ -112,6 +125,7 @@ class DoldMekaInterface(object):
                 goal.command.state.append(cmd)
         try:
             if len(goal.command.group_name) > 0:
+                # print "sending goal: ", goal
                 self._actionclient.send_goal(goal)
         except rospy.ROSException:
             rospy.logerr("Failed to call change state")
