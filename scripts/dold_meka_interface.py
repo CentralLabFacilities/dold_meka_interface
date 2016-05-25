@@ -115,8 +115,8 @@ class DoldMekaInterface(object):
         :param cmd : State to change to
         """
         goal = M3StateChangeGoal()
-        goal.retries = 0
-        goal.strategy = M3StateChangeGoal.BEST_POSSIBLE
+        goal.retries = 2
+        goal.strategy = M3StateChangeGoal.RETRY_N_TIMES
 
         # find enabled groups
         for group_name in self._enabled_groups:
